@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin 'daisyui';
 
 .game-phase,
 .center-card-area,
@@ -38,36 +39,4 @@
 
 .card {
     border-style: solid;
-}
-
-.color-red {
-    background-color: red;
-}
-
-.color-orange {
-    background-color: orange;
-}
-
-.color-yellow {
-    background-color: yellow;
-}
-
-.color-green {
-    background-color: green;
-}
-
-.color-cyan {
-    background-color: cyan;
-}
-
-.color-blue {
-    background-color: blue;
-}
-
-.color-purple {
-    background-color: purple;
-}
-
-.color-pink {
-    background-color: pink;
 }

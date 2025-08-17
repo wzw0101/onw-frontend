@@ -29,7 +29,7 @@ export default function PlayerCardArea({
             roomInfo.seats.map((_, index) => {
                 return (
                     <div key={`player-card-${index}`} className={`card 
-                        ${[selectedIndex, selectedIndex2].includes(index) ? "selected" : ""}`}
+                        ${[selectedIndex, selectedIndex2].includes(index) ? "outline-primary" : ""}`}
                         onClick={() => {
                             if (selected) {
                                 return;
@@ -51,7 +51,7 @@ export default function PlayerCardArea({
             roomInfo.seats.map((_, index) => {
                 return (
                     <div key={`player-card-${index}`}
-                        className={`card ${[selectedIndex, selectedIndex2].includes(index) ? "selected" : ""}`}
+                        className={`card ${[selectedIndex, selectedIndex2].includes(index) ? "outline-primary" : ""}`}
                         onClick={() => !selected && setSelectedIndex(index)}>
                         {selected && index === selectedIndex && result}
                     </div>);

@@ -14,6 +14,17 @@ interface RoomProps {
     setConnectionStatus: React.Dispatch<React.SetStateAction<number>>
 }
 
+const playerColor = {
+    RED: "bg-red-500",
+    ORANGE: "bg-orange-500",
+    YELLOW: "bg-yellow-500",
+    GREEN: "bg-green-500",
+    CYAN: "bg-cyan-500",
+    BLUE: "bg-blue-500",
+    PURPLE: "bg-purple-500",
+    PINK: "bg-pink-500",
+}
+
 export default function Room({ playerId, roomId, connectionStatus, setConnectionStatus }: RoomProps) {
     const clientRef = useRef<null | Client>(null);
     const subscriptionRef = useRef<null | StompSubscription>(null);
@@ -93,17 +104,24 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
     const playerSeatNum = roomInfo.seats.indexOf(playerId);
 
     return (
-        <div>
+        <div className="mt-4">
             <CenterCardArea roomInfo={roomInfo} gamePhase={gamePhase} selected={selected} result={result} initialRole={initialRole}
                 selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
             <PlayerCardArea roomInfo={roomInfo} playerId={playerId} selected={selected} result={result} initialRole={initialRole}
                 gamePhase={gamePhase} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex}
                 selectedIndex2={selectedIndex2} setSelectedIndex2={setSelectedIndex2} />
-            <div className="table-area">
+            <ul className="flex flex-row gap-4 mb-8">
                 {roomInfo.seats.map((seatPlayerId, index) => seatPlayerId
-                    ? <div key={`seat-${index}`} className={`seat player color-${roomInfo.playerColorMap[seatPlayerId]?.toLowerCase()}
-                        ${roomInfo.readyList[index] ? "ready" : ""}`}>{`${seatPlayerId}`}</div>
-                    : <div key={`seat-${index}`} className="seat" onClick={async () => {
+                    ? <li key={`seat-${index}`} className={`indicator`}>
+                        {roomInfo.readyList[index]
+                            && <span className="indicator-item badge badge-success p-0 size-4" >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg></span>}
+                        <div className={`seat player ${playerColor[roomInfo.playerColorMap[seatPlayerId]]}`}>
+                            {`${seatPlayerId}`}
+                        </div></li>
+                    : <li key={`seat-${index}`} className="seat" onClick={async () => {
                         // TODO setInitialRole here
                         const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/seat/${index}`, { method: "POST" });
                         const responseBody: ResponseBody<SeatData> = await response.json();
@@ -113,20 +131,20 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                         }
                         setInitialRole(responseBody.data.initialRole);
                     }} />)}
-            </div>
-            <div className="candidate-area">
+            </ul>
+            <div className="flex gap-4">
                 {
                     [...roomInfo.players]
                         .filter((player) => !roomInfo.seats.includes(player))
                         .map((player) => (
                             <div key={player}
-                                className={`player color-${roomInfo.playerColorMap[player]?.toLowerCase()}`}>
+                                className={`player ${playerColor[roomInfo.playerColorMap[player]]}`}>
                                 {player}
                             </div>))
                 }
             </div>
 
-            <div>
+            <div className="mt-8">
                 <Button onClick={() => { setShowRole(!showRole) }}>show role</Button>
 
                 {
@@ -216,7 +234,7 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
 
                 {
                     showRole && initialRole &&
-                    <div> {initialRole}</div>
+                    <div>{initialRole}</div>
                 }
 
                 {

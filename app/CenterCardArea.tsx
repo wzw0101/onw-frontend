@@ -17,18 +17,18 @@ export default function CenterCardArea({
     const playerRole = initialRole;
 
     return (
-        <div className="center-card-area">
+        <div className="flex gap-4 mb-8">
             {[0, 1, 2].map((index) => {
                 if (gamePhase === "WEREWOLF_TURN" && playerRole === "WEREWOLF") {
                     return (
-                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "selected" : ""}`}
+                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "outline-primary" : ""}`}
                             onClick={() => !selected && setSelectedIndex(index)} >
                             {selected && result}
                         </div>
                     );
                 } else if (gamePhase === "DRUNK_TURN" && playerRole === "DRUNK") {
                     return (
-                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "selected" : ""}`}
+                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "outline-primary" : ""}`}
                             onClick={() => !selected && setSelectedIndex(index)} />
                     );
                 } else {
