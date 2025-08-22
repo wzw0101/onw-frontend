@@ -28,8 +28,9 @@ export default function PlayerCardArea({
         playerCards = (<> {
             roomInfo.seats.map((_, index) => {
                 return (
-                    <div key={`player-card-${index}`} className={`card 
-                        ${[selectedIndex, selectedIndex2].includes(index) ? "outline-primary" : ""}`}
+                    <li key={`player-card-${index}`}
+                        className={`flex justify-center items-center size-16 border-2 
+                            ${[selectedIndex, selectedIndex2].includes(index) ? "border-accent" : ""}  cursor-pointer`}
                         onClick={() => {
                             if (selected) {
                                 return;
@@ -50,21 +51,23 @@ export default function PlayerCardArea({
         playerCards = (<> {
             roomInfo.seats.map((_, index) => {
                 return (
-                    <div key={`player-card-${index}`}
-                        className={`card ${[selectedIndex, selectedIndex2].includes(index) ? "outline-primary" : ""}`}
+                    <li key={`player-card-${index}`}
+                        className={`flex justify-center items-center size-16 border-2 
+                            ${[selectedIndex, selectedIndex2].includes(index) ? "border-accent" : ""}  cursor-pointer`}
                         onClick={() => !selected && setSelectedIndex(index)}>
                         {selected && index === selectedIndex && result}
-                    </div>);
+                    </li>);
             })
         }</>);
     } else {
         playerCards = (<>{
-            roomInfo.seats.map((_, index) => <div key={`player-card-${index}`} className="card" />)
+            roomInfo.seats.map((_, index) =>
+                <li key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" />)
         }</>)
     }
     return (
-        <div className="flex gap-4 mb-8">
+        <ul className="flex gap-4 mb-8">
             {playerCards}
-        </div>
+        </ul>
     )
 }

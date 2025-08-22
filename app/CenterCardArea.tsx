@@ -17,24 +17,26 @@ export default function CenterCardArea({
     const playerRole = initialRole;
 
     return (
-        <div className="flex gap-4 mb-8">
+        <ul className="flex gap-4 mb-8">
             {[0, 1, 2].map((index) => {
                 if (gamePhase === "WEREWOLF_TURN" && playerRole === "WEREWOLF") {
                     return (
-                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "outline-primary" : ""}`}
+                        <li key={`center-card-${index}`} className={`flex justify-center items-center size-16 border-2 
+                            ${index === selectedIndex ? "border-accent" : ""} cursor-pointer`}
                             onClick={() => !selected && setSelectedIndex(index)} >
-                            {selected && result}
-                        </div>
+                            {selected && selectedIndex === index && result}
+                        </li>
                     );
                 } else if (gamePhase === "DRUNK_TURN" && playerRole === "DRUNK") {
                     return (
-                        <div key={`center-card-${index}`} className={`card ${index === selectedIndex ? "outline-primary" : ""}`}
+                        <li key={`center-card-${index}`} className={`flex justify-center items-center size-16 border-2 
+                            ${index === selectedIndex ? "border-accent" : ""} cursor-pointer`}
                             onClick={() => !selected && setSelectedIndex(index)} />
                     );
                 } else {
-                    return <div key={`center-card-${index}`} className="card" />;
+                    return <li key={`center-card-${index}`} className="flex justify-center items-center size-16 border-2" />;
                 }
             })}
-        </div>
+        </ul>
     )
 }

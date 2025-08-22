@@ -4,7 +4,6 @@ import { AUTHORITY, GamePhase, GetInsomniacData, GetSeerData, GetWerewolfData, H
 import CenterCardArea from "./CenterCardArea";
 import PlayerCardArea from "./PlayerCardArea";
 import VoteArea from "./VoteArea";
-import Button from "./components/Button";
 import { post, put } from "./lib/lib";
 
 interface RoomProps {
@@ -112,56 +111,62 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                 selectedIndex2={selectedIndex2} setSelectedIndex2={setSelectedIndex2} />
             <ul className="flex flex-row gap-4 mb-8">
                 {roomInfo.seats.map((seatPlayerId, index) => seatPlayerId
-                    ? <li key={`seat-${index}`} className={`indicator`}>
+                    ? <li key={`seat-${index}`}
+                        className={`indicator flex justify-center items-center size-16 rounded-md transition-colors
+                        ${playerColor[roomInfo.playerColorMap[seatPlayerId]]}`}>
                         {roomInfo.readyList[index]
                             && <span className="indicator-item badge badge-success p-0 size-4" >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                 </svg></span>}
-                        <div className={`seat player ${playerColor[roomInfo.playerColorMap[seatPlayerId]]}`}>
-                            {`${seatPlayerId}`}
-                        </div></li>
-                    : <li key={`seat-${index}`} className="seat" onClick={async () => {
-                        // TODO setInitialRole here
-                        const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/seat/${index}`, { method: "POST" });
-                        const responseBody: ResponseBody<SeatData> = await response.json();
-                        if (responseBody.code) {
-                            console.error(responseBody.message);
-                            return;
-                        }
-                        setInitialRole(responseBody.data.initialRole);
-                    }} />)}
+                        <div>{`${seatPlayerId}`}</div></li>
+                    : <li key={`seat-${index}`}
+                        className="flex justify-center items-center size-16 border-2 border-neutral-50 border-dashed rounded-md transition-colors cursor-pointer"
+                        onClick={async () => {
+                            // TODO setInitialRole here
+                            const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/seat/${index}`, { method: "POST" });
+                            const responseBody: ResponseBody<SeatData> = await response.json();
+                            if (responseBody.code) {
+                                console.error(responseBody.message);
+                                return;
+                            }
+                            setInitialRole(responseBody.data.initialRole);
+                        }} />)}
             </ul>
-            <div className="flex gap-4">
+            <ul className="flex gap-4">
                 {
                     [...roomInfo.players]
                         .filter((player) => !roomInfo.seats.includes(player))
                         .map((player) => (
-                            <div key={player}
-                                className={`player ${playerColor[roomInfo.playerColorMap[player]]}`}>
+                            <li key={player}
+                                className={`flex justify-center items-center size-16 rounded-md transition-colors 
+                                        ${playerColor[roomInfo.playerColorMap[player]]}`}>
                                 {player}
-                            </div>))
+                            </li>))
                 }
-            </div>
+            </ul>
 
             <div className="mt-8">
-                <Button onClick={() => { setShowRole(!showRole) }}>show role</Button>
+                <button className="btn btn-primary" onClick={() => { setShowRole(!showRole) }}>show role</button>
 
                 {
                     gamePhase === "PREPARE" && playerSeatNum >= 0 &&
-                    <Button onClick={() => {
-                        fetch(`${HTTP_PREFIX}/player/${playerId}/ready/${!roomInfo.readyList[playerSeatNum]}`, { method: "PUT" });
-                    }}>ready</Button>
+                    <button className="btn btn-primary"
+                        onClick={() => {
+                            fetch(`${HTTP_PREFIX}/player/${playerId}/ready/${!roomInfo.readyList[playerSeatNum]}`, { method: "PUT" });
+                        }}>ready</button>
                 }
 
                 {
                     gamePhase === "PREPARE" && roomInfo.hostPlayer === playerId &&
-                    <Button onClick={() => { fetch(`${HTTP_PREFIX}/player/${playerId}/game-start`, { method: "POST" }); }} >start</Button>
+                    <button className="btn btn-primary"
+                        onClick={() => { fetch(`${HTTP_PREFIX}/player/${playerId}/game-start`, { method: "POST" }); }} >start
+                    </button>
                 }
 
                 {
                     gamePhase !== "PREPARE" && gamePhase !== "VOTE_TURN" && gamePhase !== "GAME_OVER" &&
-                    (<Button onClick={async () => {
+                    (<button className="btn btn-primary" onClick={async () => {
                         if (gamePhase === "TROUBLEMAKER_TURN") {
                             if (selectedIndex < 0 || selectedIndex2 < 0) {
                                 return;
@@ -218,14 +223,14 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                             }
                         }
                         setSelected(true);
-                    }}>select</Button>)
+                    }}>select</button>)
                 }
 
                 {
                     gamePhase === "GAME_OVER" &&
-                    <Button onClick={() => {
+                    <button className="btn btn-primary" onClick={() => {
                         post(`${HTTP_PREFIX}/player/${playerId}/restart`, {});
-                    }}>restart</Button>
+                    }}>restart</button>
                 }
             </div>
 

@@ -1,4 +1,3 @@
-import Button from "./components/Button";
 import { HTTP_PREFIX, RoomInfo } from "./lib/constants";
 
 interface VoteAreaProps {
@@ -14,25 +13,27 @@ export default function VoteArea({
     roomInfo, playerId, selected, setSelected, selectedIndex, setSelectedIndex
 }: VoteAreaProps) {
     return (
-        <div className="vote-area">
-            <Button disabled={selected} onClick={async () => {
-                if (selected) {
-                    return;
-                }
-                if (selectedIndex === roomInfo.seats.indexOf(playerId)) {
-                    console.log("cannot vote your self");
-                    return;
-                }
-                setSelected(true);
-                await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/${selectedIndex}`, { method: "POST" });
-            }}>vote</Button>
+        <div className="flex gap-4">
+            <button disabled={selected} className="btn btn-primary"
+                onClick={async () => {
+                    if (selected) {
+                        return;
+                    }
+                    if (selectedIndex === roomInfo.seats.indexOf(playerId)) {
+                        console.log("cannot vote your self");
+                        return;
+                    }
+                    setSelected(true);
+                    await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/${selectedIndex}`, { method: "POST" });
+                }}>vote</button>
 
             {
                 roomInfo.hostPlayer === playerId &&
                 (
-                    <Button onClick={async () => {
-                        await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/done`, { method: "POST" });
-                    }}>vote end</Button>
+                    <button className="btn btn-primary"
+                        onClick={async () => {
+                            await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/done`, { method: "POST" });
+                        }}>vote end</button>
                 )
 
             }
@@ -42,7 +43,8 @@ export default function VoteArea({
                     {
                         roomInfo.seats.map((seatPlayerId, index) => {
                             return (
-                                <div key={`vote-${seatPlayerId}`} className={`player ${index === selectedIndex ? "selected" : ""}`}
+                                <div key={`vote-${seatPlayerId}`}
+                                    className={`player ${index === selectedIndex ? "border-accent" : ""} `}
                                     onClick={() => {
                                         !selected && setSelectedIndex(index)
                                     }}>

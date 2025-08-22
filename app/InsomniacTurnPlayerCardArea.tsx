@@ -27,9 +27,9 @@ export default function InsomniacTurnPlayerCardArea({ playerId, players }: Insom
         <>{
             players.map((_, index) => {
                 if (index === playerSeatNum) {
-                    return <div key={`player-card-${index}`} className="card" >{`${roleCard}`}</div>
+                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" >{`${roleCard}`}</div>
                 } else {
-                    return <div key={`player-card-${index}`} className="card" />;
+                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" />;
                 }
             })
         }</>
