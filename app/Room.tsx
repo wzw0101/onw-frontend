@@ -133,7 +133,7 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                             setInitialRole(responseBody.data.initialRole);
                         }} />)}
             </ul>
-            <ul className="flex gap-4">
+            <ul className="flex gap-4 mb-8">
                 {
                     [...roomInfo.players]
                         .filter((player) => !roomInfo.seats.includes(player))
@@ -146,7 +146,7 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                 }
             </ul>
 
-            <div className="mt-8">
+            <div>
                 <button className="btn btn-primary" onClick={() => { setShowRole(!showRole) }}>show role</button>
 
                 {

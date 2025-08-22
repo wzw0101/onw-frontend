@@ -29,7 +29,7 @@ export default function PlayerCardArea({
             roomInfo.seats.map((_, index) => {
                 return (
                     <li key={`player-card-${index}`}
-                        className={`flex justify-center items-center size-16 border-2 
+                        className={`flex justify-center items-center size-16 border-2 rounded-md
                             ${[selectedIndex, selectedIndex2].includes(index) ? "border-accent" : ""}  cursor-pointer`}
                         onClick={() => {
                             if (selected) {
@@ -52,7 +52,7 @@ export default function PlayerCardArea({
             roomInfo.seats.map((_, index) => {
                 return (
                     <li key={`player-card-${index}`}
-                        className={`flex justify-center items-center size-16 border-2 
+                        className={`flex justify-center items-center size-16 border-2 rounded-md
                             ${[selectedIndex, selectedIndex2].includes(index) ? "border-accent" : ""}  cursor-pointer`}
                         onClick={() => !selected && setSelectedIndex(index)}>
                         {selected && index === selectedIndex && result}
@@ -62,7 +62,7 @@ export default function PlayerCardArea({
     } else {
         playerCards = (<>{
             roomInfo.seats.map((_, index) =>
-                <li key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" />)
+                <li key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2 rounded-md" />)
         }</>)
     }
     return (

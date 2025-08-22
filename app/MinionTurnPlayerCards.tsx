@@ -24,9 +24,11 @@ export default function MinionTurnPlayerCards({ playerId, players }: MinionTurnP
         <>{
             players.map((_, index) => {
                 if (index === werewolfIndex) {
-                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" >"WEREWOLF"</div>
+                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2
+                        rounded-md" >"WEREWOLF"</div>
                 } else {
-                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2" />;
+                    return <div key={`player-card-${index}`} className="flex justify-center items-center size-16 border-2
+                        rounded-md" />;
                 }
             })
         }</>
