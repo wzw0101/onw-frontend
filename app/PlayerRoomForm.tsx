@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { HTTP_PREFIX } from "./lib/constants";
 import { ResponseBody } from "./lib/constants";
+import CreateRoomForm, { CreateRoomFormData } from "./CreateRoomForm";
 
 interface FormType {
     playerId: string,
@@ -15,6 +16,7 @@ interface FormType {
 
 export default function Form({ playerId, setPlayerId, roomId, setRoomId, connectionStatus, setConnectionStatus }: FormType) {
     const [editPlayer, setEditPlayer] = useState(false);
+    const [showCreateRoomForm, setShowCreateRoomForm] = useState(false);
 
     return (
         <div className="flex flex-col">
@@ -90,19 +92,38 @@ export default function Form({ playerId, setPlayerId, roomId, setRoomId, connect
                         </svg>
                     </label>
                     <button disabled={!!connectionStatus} className="btn btn-ghost"
-                        onClick={async () => {
-                            const roomId = await (
-                                await fetch(`${HTTP_PREFIX}/player/${playerId}/room`, { method: "POST" })
-                            ).text();
-                            setConnectionStatus(1)
-                            setRoomId(roomId);
-                        }}>
+                        onClick={() => setShowCreateRoomForm(true)}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="size-4">
                             <path fillRule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm.75-10.25v2.5h2.5a.75.75 0 0 1 0 1.5h-2.5v2.5a.75.75 0 0 1-1.5 0v-2.5h-2.5a.75.75 0 0 1 0-1.5h2.5v-2.5a.75.75 0 0 1 1.5 0Z" clipRule="evenodd" />
                         </svg>
                     </button>
                 </div>
             }
+            <CreateRoomForm
+                isOpen={showCreateRoomForm}
+                onClose={() => setShowCreateRoomForm(false)}
+                onSubmit={async (data: CreateRoomFormData) => {
+                    try {
+                        const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/room`, {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                roles: data.selectedRoles,
+                                turnDurationSeconds: data.turnDurationSeconds
+                            })
+                        });
+                        const roomId = await response.text();
+                        setConnectionStatus(1);
+                        setRoomId(roomId);
+                        setShowCreateRoomForm(false);
+                    } catch (error) {
+                        console.error("Failed to create room:", error);
+                        alert("Failed to create room. Please try again.");
+                    }
+                }}
+            />
         </div >
     );
 }
