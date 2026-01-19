@@ -64,3 +64,7 @@ export type GamePhase = "PREPARE" | "GAME_START" | "WEREWOLF_TURN" | "MINION_TUR
     | "DRUNK_TURN" | "INSOMNIAC_TURN" | "VOTE_TURN" | "GAME_OVER";
 
 export type MessageBody = RoomChangedMessageBody | PhaseChangedMessageBody;
+
+export interface VoteResult {
+    [playerId: string]: number
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Client, IMessage, ReconnectionTimeMode, StompSubscription } from "@stomp/stompjs";
-import { AUTHORITY, GamePhase, GetInsomniacData, GetSeerData, GetWerewolfData, HTTP_PREFIX, MessageBody, PutRobberData, ResponseBody, RoleCard, RoomInfo, SeatData } from "./lib/constants";
+import { AUTHORITY, GamePhase, GetInsomniacData, GetSeerData, GetWerewolfData, HTTP_PREFIX, MessageBody, PutRobberData, ResponseBody, RoleCard, RoomInfo, SeatData, VoteResult } from "./lib/constants";
 import CenterCardArea from "./CenterCardArea";
 import PlayerCardArea from "./PlayerCardArea";
 import VoteArea from "./VoteArea";
@@ -35,7 +35,7 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
     const [selectedIndex2, setSelectedIndex2] = useState(-1);
     const [selected, setSelected] = useState(false);
     const [result, setResult] = useState("");
-    const [mostVotedPlayer, setMostVotedPlayer] = useState<null | string>(null);
+    const [voteResult, setVoteResult] = useState<null | VoteResult>(null);
 
     async function handleSubscriptionMessage(message: IMessage) {
         const messageBody: MessageBody = JSON.parse(message.body);
@@ -47,7 +47,7 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
             setSelectedIndex2(-1);
             setSelected(false);
             setResult("");
-            setMostVotedPlayer(null);
+            setVoteResult(null);
             setGamePhase(messageBody.gamePhase);
             if (messageBody.gamePhase === "INSOMNIAC_TURN") {
                 const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/insomniac-turn`);
@@ -55,8 +55,8 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
                 setResult(responseBody.data.roleCard);
             } else if (messageBody.gamePhase === "GAME_OVER") {
                 const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/result`);
-                const mostVotedPlayer = await response.text();
-                setMostVotedPlayer(mostVotedPlayer);
+                const responseBody: ResponseBody<VoteResult> = await response.json();
+                setVoteResult(responseBody.data);
             }
         }
     }
@@ -244,13 +244,20 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
 
                 {
                     gamePhase === "VOTE_TURN" &&
-                    <VoteArea roomInfo={roomInfo} playerId={playerId} selected={selected} setSelected={setSelected}
+                    <VoteArea roomInfo={roomInfo} playerId={playerId}
                         selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
                 }
 
                 {
                     gamePhase === "GAME_OVER" &&
-                    <div>Most voted player is {`${mostVotedPlayer}`}</div>
+                    <div>
+                        <div className="font-bold mb-2">Vote Results:</div>
+                        <ul className="list-disc pl-6">
+                            {voteResult && Object.entries(voteResult).map(([playerId, count]) => (
+                                <li key={playerId}>{playerId}: {count} votes</li>
+                            ))}
+                        </ul>
+                    </div>
                 }
             </div>
 

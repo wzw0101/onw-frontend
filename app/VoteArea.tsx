@@ -3,29 +3,23 @@ import { HTTP_PREFIX, RoomInfo } from "./lib/constants";
 interface VoteAreaProps {
     roomInfo: RoomInfo,
     playerId: string,
-    selected: boolean
-    setSelected: React.Dispatch<React.SetStateAction<boolean>>
     selectedIndex: number
     setSelectedIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
 export default function VoteArea({
-    roomInfo, playerId, selected, setSelected, selectedIndex, setSelectedIndex
+    roomInfo, playerId, selectedIndex, setSelectedIndex
 }: VoteAreaProps) {
     return (
         <>
-            <div className="flex gap-4">
-                <button disabled={selected} className="btn btn-primary"
+            <div className="flex gap-4 mb-4">
+                <button className="btn btn-primary"
                     onClick={async () => {
-                        if (selected) {
-                            return;
-                        }
                         if (selectedIndex === roomInfo.seats.indexOf(playerId)) {
                             console.log("cannot vote your self");
                             return;
                         }
                         await fetch(`${HTTP_PREFIX}/player/${playerId}/vote/${selectedIndex}`, { method: "POST" });
-                        setSelected(true);
                     }}>vote</button>
                 {
                     roomInfo.hostPlayer === playerId &&
@@ -37,14 +31,21 @@ export default function VoteArea({
                     )
                 }
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mb-4">
+                <div key="center-vote"
+                    className={`flex justify-center items-center size-16 rounded-md border-2 ${selectedIndex === -1 ? "border-accent" : ""} cursor-pointer`}
+                    onClick={() => {
+                        setSelectedIndex(-1);
+                    }}>
+                    Center
+                </div>
                 {
                     roomInfo.seats.map((seatPlayerId, index) => {
                         return (
                             <div key={`vote-${seatPlayerId}`}
-                                className={`flex justify-center items-center size-16 rounded-md border-2 ${index === selectedIndex ? "border-accent" : ""} `}
+                                className={`flex justify-center items-center size-16 rounded-md border-2 ${index === selectedIndex ? "border-accent" : ""} cursor-pointer`}
                                 onClick={() => {
-                                    !selected && setSelectedIndex(index)
+                                    setSelectedIndex(index);
                                 }}>
                                 {seatPlayerId}
                             </div>
