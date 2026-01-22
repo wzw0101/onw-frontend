@@ -50,6 +50,10 @@ export interface PutRobberData {
     roleCard: RoleCard,
 }
 
+export interface GetInitialRoleData {
+    initialRole: RoleCard,
+}
+
 export interface RoomChangedMessageBody {
     eventType: "ROOM_STATE_CHANGED",
     data: RoomInfo

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Client, IMessage, ReconnectionTimeMode, StompSubscription } from "@stomp/stompjs";
-import { AUTHORITY, GamePhase, GetInsomniacData, GetSeerData, GetWerewolfData, HTTP_PREFIX, MessageBody, PutRobberData, ResponseBody, RoleCard, RoomInfo, SeatData, VoteResult } from "./lib/constants";
+import React, { useEffect, useState } from "react";
+import { Client, IMessage, ReconnectionTimeMode } from "@stomp/stompjs";
+import { AUTHORITY, GamePhase, GetInitialRoleData, GetInsomniacData, GetSeerData, GetWerewolfData, HTTP_PREFIX, MessageBody, PutRobberData, ResponseBody, RoleCard, RoomInfo, SeatData, VoteResult } from "./lib/constants";
 import CenterCardArea from "./CenterCardArea";
 import PlayerCardArea from "./PlayerCardArea";
 import VoteArea from "./VoteArea";
@@ -25,8 +25,6 @@ const playerColor = {
 }
 
 export default function Room({ playerId, roomId, connectionStatus, setConnectionStatus }: RoomProps) {
-    const clientRef = useRef<null | Client>(null);
-    const subscriptionRef = useRef<null | StompSubscription>(null);
     const [roomInfo, setRoomInfo] = useState<null | RoomInfo>(null);
     const [gamePhase, setGamePhase] = useState<GamePhase>("PREPARE");
     const [showRole, setShowRole] = useState(false);
@@ -49,7 +47,13 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
             setResult("");
             setVoteResult(null);
             setGamePhase(messageBody.gamePhase);
-            if (messageBody.gamePhase === "INSOMNIAC_TURN") {
+            if (messageBody.gamePhase === "PREPARE") {
+                const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/initial-role`);
+                const responseBody: ResponseBody<GetInitialRoleData> = await response.json();
+                if (responseBody.code === 0) {
+                    setInitialRole(responseBody.data.initialRole);
+                }
+            } else if (messageBody.gamePhase === "INSOMNIAC_TURN") {
                 const response = await fetch(`${HTTP_PREFIX}/player/${playerId}/insomniac-turn`);
                 const responseBody: ResponseBody<GetInsomniacData> = await response.json();
                 setResult(responseBody.data.roleCard);
@@ -61,40 +65,33 @@ export default function Room({ playerId, roomId, connectionStatus, setConnection
         }
     }
 
-    if (clientRef.current === null) {
-        clientRef.current = new Client({
+    useEffect(() => {
+        const client = new Client({
             brokerURL: `ws://${AUTHORITY}/stomp/registry`,
             reconnectDelay: 1000,
             reconnectTimeMode: ReconnectionTimeMode.EXPONENTIAL,
             maxReconnectDelay: 10000,
-            debug: (str) => console.log(str)
+            debug: (str: string) => console.log(str)
         });
-        clientRef.current.onConnect = async function () {
+        client.onConnect = async function () {
             console.log("connected!");
             setConnectionStatus(2);
-            subscriptionRef.current?.unsubscribe();
-            subscriptionRef.current = this.subscribe(`/topic/room/${roomId}`, handleSubscriptionMessage);
+            this.subscribe(`/topic/room/${roomId}`, handleSubscriptionMessage);
             const responseBody: ResponseBody<RoomInfo> = await (await fetch(`${HTTP_PREFIX}/player/${playerId}/room`)).json();
             setRoomInfo(responseBody.data);
         }
-        clientRef.current.onDisconnect = function () {
+        client.onDisconnect = function () {
             console.log("disconnected!");
         }
-        clientRef.current.onWebSocketClose = () => {
+        client.onWebSocketClose = () => {
             console.log("websocket closed!")
         }
-    }
-
-    useEffect(() => {
-        console.log("use effect");
-        clientRef.current?.activate();
+        client.activate();
         return () => {
             console.log("destruct effect");
-            subscriptionRef.current?.unsubscribe();
-            subscriptionRef.current = null;
-            clientRef.current?.deactivate();
+            client.deactivate();
         }
-    }, []);
+    }, [playerId, roomId]);
 
     if (!roomInfo || connectionStatus < 2) {
         return <div />;
