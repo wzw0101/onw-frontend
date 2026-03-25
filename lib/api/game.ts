@@ -49,4 +49,8 @@ export const gameApi = {
 
     getVoteResult: (playerId: string) =>
         apiClient.get<string>(`/player/${playerId}/vote/result`),
+
+    // 行动确认
+    turnEnd: (playerId: string) =>
+        apiClient.post<void>(`/player/${playerId}/turn-end`),
 };

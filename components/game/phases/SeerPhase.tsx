@@ -15,6 +15,7 @@ export default function SeerPhase({ roomInfo, playerId, initialRole }: SeerPhase
     const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const [selected, setSelected] = React.useState(false);
     const [seerResult, setSeerResult] = React.useState("");
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     if (initialRole !== "SEER") {
         return <WaitingPhase title="🔮 Seer Turn" description="Seer is investigating..." />;
@@ -51,6 +52,15 @@ export default function SeerPhase({ roomInfo, playerId, initialRole }: SeerPhase
                     <p className="text-blue-600 font-semibold">The role is:</p>
                     <p className="text-xl font-bold mt-2">{seerResult}</p>
                 </div>
+            )}
+            {seerResult && (
+                <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
             )}
         </div>
     );

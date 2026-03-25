@@ -12,6 +12,7 @@ interface InsomniacPhaseProps {
 
 export default function InsomniacPhase({ playerId, initialRole }: InsomniacPhaseProps) {
     const [insomniacInfo, setInsomniacInfo] = React.useState<null | { role: RoleCard }>(null);
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     React.useEffect(() => {
         if (initialRole !== "INSOMNIAC") return;
@@ -33,6 +34,15 @@ export default function InsomniacPhase({ playerId, initialRole }: InsomniacPhase
                     <p className="text-2xl font-bold">{insomniacInfo.role}</p>
                 </div>
             ) : <p>Loading...</p>}
+            {insomniacInfo && (
+                <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
+            )}
         </div>
     );
 }

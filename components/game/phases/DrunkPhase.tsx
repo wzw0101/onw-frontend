@@ -13,6 +13,7 @@ interface DrunkPhaseProps {
 export default function DrunkPhase({ playerId, initialRole }: DrunkPhaseProps) {
     const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const [selected, setSelected] = React.useState(false);
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     if (initialRole !== "DRUNK") {
         return <WaitingPhase title="🥃 Drunk Turn" description="Drunk is swapping cards..." />;
@@ -40,6 +41,15 @@ export default function DrunkPhase({ playerId, initialRole }: DrunkPhaseProps) {
                     if (body.code === 0) setSelected(true);
                 }}>Confirm Swap</button>
             {selected && <p className="text-green-600 font-semibold mt-4">Role has been swapped!</p>}
+            {selected && (
+                <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
+            )}
         </div>
     );
 }

@@ -14,7 +14,7 @@ export default function GameOverPhase({ roomInfo, playerId }: GameOverPhaseProps
     const [mostVotedPlayer, setMostVotedPlayer] = React.useState<null | string>(null);
 
     React.useEffect(() => {
-        gameApi.getVoteResult(playerId).then(text => setMostVotedPlayer(text));
+        gameApi.getVoteResult(playerId).then(res => setMostVotedPlayer(res.data));
     }, []);
 
     return (

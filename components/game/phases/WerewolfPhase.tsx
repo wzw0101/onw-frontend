@@ -16,6 +16,7 @@ export default function WerewolfPhase({ roomInfo, playerId, initialRole }: Werew
     const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const [selected, setSelected] = React.useState(false);
     const [werewolfInfo, setWerewolfInfo] = React.useState<null | { otherWerewolves: number[]; selectedCenterCard?: RoleCard }>(null);
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     React.useEffect(() => {
         if (initialRole !== "WEREWOLF") return;
@@ -83,7 +84,25 @@ export default function WerewolfPhase({ roomInfo, playerId, initialRole }: Werew
                             <p className="text-3xl font-bold text-blue-600">{werewolfInfo.selectedCenterCard}</p>
                         </div>
                     )}
+                    {werewolfInfo?.selectedCenterCard && (
+                        <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                            onClick={async () => {
+                                setTurnEnding(true);
+                                await gameApi.turnEnd(playerId);
+                            }}>
+                            {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                        </button>
+                    )}
                 </div>
+            )}
+            {werewolfInfo && werewolfInfo.otherWerewolves.length > 0 && (
+                <button className="btn btn-success w-full" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
             )}
         </div>
     );

@@ -15,6 +15,7 @@ export default function RobberPhase({ roomInfo, playerId, initialRole }: RobberP
     const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const [selected, setSelected] = React.useState(false);
     const [result, setResult] = React.useState("");
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     if (initialRole !== "ROBBER") {
         return <WaitingPhase title="🎭 Robber Turn" description="Robber is choosing a target..." />;
@@ -51,6 +52,15 @@ export default function RobberPhase({ roomInfo, playerId, initialRole }: RobberP
                     <p className="text-purple-600 font-semibold">You stole the role:</p>
                     <p className="text-xl font-bold mt-2">{result}</p>
                 </div>
+            )}
+            {result && (
+                <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
             )}
         </div>
     );

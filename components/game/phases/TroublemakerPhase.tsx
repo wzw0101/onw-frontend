@@ -15,6 +15,7 @@ export default function TroublemakerPhase({ roomInfo, playerId, initialRole }: T
     const [selectedIndex, setSelectedIndex] = React.useState(-1);
     const [selectedIndex2, setSelectedIndex2] = React.useState(-1);
     const [selected, setSelected] = React.useState(false);
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     if (initialRole !== "TROUBLEMAKER") {
         return <WaitingPhase title="🃏 Troublemaker Turn" description="Troublemaker is taking action..." />;
@@ -53,6 +54,15 @@ export default function TroublemakerPhase({ roomInfo, playerId, initialRole }: T
                     if (body.code === 0) setSelected(true);
                 }}>Confirm Swap</button>
             {selected && <p className="text-green-600 font-semibold mt-4">Roles have been swapped!</p>}
+            {selected && (
+                <button className="btn btn-success w-full mt-4" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
+            )}
         </div>
     );
 }

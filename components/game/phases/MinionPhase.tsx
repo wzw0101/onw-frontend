@@ -13,6 +13,7 @@ interface MinionPhaseProps {
 
 export default function MinionPhase({ roomInfo, playerId, initialRole }: MinionPhaseProps) {
     const [minionInfo, setMinionInfo] = React.useState<null | { werewolfIndex: number }>(null);
+    const [turnEnding, setTurnEnding] = React.useState(false);
 
     React.useEffect(() => {
         if (initialRole !== "MINION") return;
@@ -38,6 +39,15 @@ export default function MinionPhase({ roomInfo, playerId, initialRole }: MinionP
                     )}
                 </div>
             ) : <p>Loading...</p>}
+            {minionInfo && (
+                <button className="btn btn-success w-full" disabled={turnEnding}
+                    onClick={async () => {
+                        setTurnEnding(true);
+                        await gameApi.turnEnd(playerId);
+                    }}>
+                    {turnEnding ? '等待流转...' : '确认，进入下一阶段'}
+                </button>
+            )}
         </div>
     );
 }
